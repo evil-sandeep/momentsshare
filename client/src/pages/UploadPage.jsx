@@ -3,7 +3,7 @@ import { useDropzone } from 'react-dropzone';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Upload, X, CheckCircle2, AlertCircle, Sparkles,
-  Link2, Copy, Check, ImagePlus, Loader2, QrCode
+  Link2, Copy, Check, ImagePlus, Loader2, QrCode, Clock
 } from 'lucide-react';
 import axios from 'axios';
 import { QRCodeSVG } from 'qrcode.react';
@@ -74,7 +74,7 @@ const UploadScreen = ({ onSuccess }) => {
       setProgress(100);
 
       setTimeout(() => {
-        onSuccess(res.data.galleryId, files.length);
+        onSuccess(res.data.galleryId, files.length, res.data.expiresAt);
       }, 500);
     } catch (err) {
       setError(err.response?.data?.message || 'Upload failed. Please try again.');
@@ -286,9 +286,13 @@ const UploadScreen = ({ onSuccess }) => {
 
 
 // ---------- Step 2: Success / Share Screen ----------
-const ShareScreen = ({ galleryId, imageCount, onReset }) => {
+const ShareScreen = ({ galleryId, imageCount, expiresAt, onReset }) => {
   const shareUrl = `${window.location.origin}/gallery/${galleryId}`;
   const [copied, setCopied] = useState(false);
+
+  const expiryDate = expiresAt
+    ? new Date(expiresAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+    : '7 days from now';
 
   const copyLink = () => {
     navigator.clipboard.writeText(shareUrl).then(() => {
@@ -319,6 +323,10 @@ const ShareScreen = ({ galleryId, imageCount, onReset }) => {
           <p className="text-slate-400 text-sm">
             {imageCount} photo{imageCount !== 1 ? 's' : ''} uploaded · Share with anyone
           </p>
+          <div className="mt-3 inline-flex items-center gap-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full px-3 py-1 text-amber-400 text-xs">
+            <Clock size={11} />
+            Expires on {expiryDate}
+          </div>
         </div>
 
         {/* QR Code Card */}
@@ -410,16 +418,19 @@ const UploadPage = () => {
   const [step, setStep] = useState('upload'); // 'upload' | 'share'
   const [galleryId, setGalleryId] = useState(null);
   const [imageCount, setImageCount] = useState(0);
+  const [expiresAt, setExpiresAt] = useState(null);
 
-  const handleSuccess = (id, count) => {
+  const handleSuccess = (id, count, expiry) => {
     setGalleryId(id);
     setImageCount(count);
+    setExpiresAt(expiry);
     setStep('share');
   };
 
   const handleReset = () => {
     setGalleryId(null);
     setImageCount(0);
+    setExpiresAt(null);
     setStep('upload');
   };
 
@@ -431,7 +442,7 @@ const UploadPage = () => {
         </motion.div>
       ) : (
         <motion.div key="share" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-          <ShareScreen galleryId={galleryId} imageCount={imageCount} onReset={handleReset} />
+          <ShareScreen galleryId={galleryId} imageCount={imageCount} expiresAt={expiresAt} onReset={handleReset} />
         </motion.div>
       )}
     </AnimatePresence>

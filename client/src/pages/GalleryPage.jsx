@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Masonry from 'react-masonry-css';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Download, Maximize2, Heart, Sparkles, Loader2, Zap } from 'lucide-react';
+import { Download, Maximize2, Heart, Sparkles, Loader2, Zap, Clock, ImageOff } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import ImageModal from '../components/ImageModal';
@@ -11,6 +11,8 @@ const GalleryPage = () => {
   const { id } = useParams();
   const [images, setImages] = useState([]);
   const [galleryTitle, setGalleryTitle] = useState('Gallery');
+  const [expiresAt, setExpiresAt] = useState(null);
+  const [expired, setExpired] = useState(false);
   const [loading, setLoading] = useState(true);
   const [zipping, setZipping] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -20,17 +22,21 @@ const GalleryPage = () => {
       try {
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
         if (id) {
-          // Fetch specific shared gallery
           const response = await axios.get(`${apiUrl}/gallery/${id}`);
           setImages(response.data.images || []);
           setGalleryTitle(response.data.title || 'Shared Gallery');
+          if (response.data.expiresAt) setExpiresAt(new Date(response.data.expiresAt));
         } else {
-          // Fallback: all images
           const response = await axios.get(`${apiUrl}/api/images`);
           setImages(response.data);
         }
       } catch (error) {
-        console.error('Failed to fetch gallery', error);
+        // 410 Gone = gallery expired or deleted
+        if (error.response?.status === 410 || error.response?.status === 404) {
+          setExpired(true);
+        } else {
+          console.error('Failed to fetch gallery', error);
+        }
       } finally {
         setLoading(false);
       }
@@ -83,6 +89,51 @@ const GalleryPage = () => {
     700: 2,
     500: 1
   };
+
+
+  // ── Expired Gallery Screen ──────────────────────────────────
+  if (expired) {
+    return (
+      <div className="min-h-screen bg-[#080C10] flex items-center justify-center px-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: 'spring', stiffness: 200, damping: 22 }}
+          className="text-center max-w-md"
+        >
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-slate-800 border border-slate-700 mb-6">
+            <ImageOff size={36} className="text-slate-500" />
+          </div>
+          <h1 className="text-3xl font-black text-white tracking-tighter mb-3">Gallery Expired</h1>
+          <p className="text-slate-400 mb-2">
+            This gallery and all its images have been permanently deleted.
+          </p>
+          <p className="text-slate-600 text-sm mb-8">
+            SnapShare galleries are automatically removed after <span className="text-slate-400 font-semibold">7 days</span> to protect privacy.
+          </p>
+          <div className="flex items-center justify-center gap-2 bg-amber-500/10 border border-amber-500/20 rounded-2xl px-5 py-3 text-amber-400 text-sm mb-8">
+            <Clock size={15} />
+            <span>Links and QR codes expire after 7 days</span>
+          </div>
+          <a
+            href="/"
+            className="inline-block px-8 py-3 rounded-2xl bg-gradient-to-r from-cyan-500 to-violet-600 text-white font-bold text-sm hover:shadow-[0_0_30px_rgba(0,245,255,0.3)] hover:scale-105 transition-all duration-200"
+          >
+            Create a New Gallery →
+          </a>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // ── Loading Screen ───────────────────────────────────────────
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#080C10] flex items-center justify-center">
+        <Loader2 className="text-cyan-400 animate-spin" size={40} />
+      </div>
+    );
+  }
 
   return (
     <div className="px-8 py-12 max-w-[1600px] mx-auto min-h-screen">
