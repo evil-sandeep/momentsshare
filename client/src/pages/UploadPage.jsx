@@ -3,13 +3,38 @@ import { useDropzone } from 'react-dropzone';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Upload, X, CheckCircle2, AlertCircle, Sparkles,
-  Link2, Copy, Check, ImagePlus, Loader2, QrCode, Clock, Download
+  Link2, Copy, Check, ImagePlus, Loader2, QrCode, Clock, Download, Github
 } from 'lucide-react';
 import axios from 'axios';
 import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
 
 const MAX_FILES = 30;
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+const DeveloperCredit = () => (
+  <motion.div 
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 0.5 }}
+    whileHover={{ opacity: 1, y: -2 }}
+    transition={{ duration: 0.5 }}
+    className="fixed bottom-6 flex items-center gap-3 px-4 py-2 rounded-2xl bg-slate-900/40 backdrop-blur-md border border-slate-800/50 group cursor-pointer"
+  >
+    <a 
+      href="https://github.com/evil-sandeep" 
+      target="_blank" 
+      rel="noopener noreferrer"
+      className="flex items-center gap-3 no-underline"
+    >
+      <div className="w-8 h-8 rounded-xl bg-slate-950 flex items-center justify-center group-hover:bg-cyan-500/10 group-hover:shadow-[0_0_20px_rgba(0,245,255,0.1)] transition-all">
+        <Github size={16} className="text-slate-500 group-hover:text-cyan-400" />
+      </div>
+      <div className="flex flex-col">
+        <span className="text-[8px] uppercase tracking-widest text-slate-600 font-bold group-hover:text-cyan-500/80 transition-colors">Developed by</span>
+        <span className="text-[11px] text-slate-400 group-hover:text-white font-pixel font-black tracking-tight transition-colors">evil-sandeep</span>
+      </div>
+    </a>
+  </motion.div>
+);
 
 // ---------- Step 1: Upload Screen ----------
 const UploadScreen = ({ onSuccess }) => {
@@ -280,6 +305,8 @@ const UploadScreen = ({ onSuccess }) => {
           Your gallery will be ready instantly ✦
         </motion.p>
       )}
+
+      <DeveloperCredit />
     </div>
   );
 };
@@ -435,6 +462,8 @@ const ShareScreen = ({ galleryId, imageCount, expiresAt, onReset }) => {
           </button>
         </motion.div>
       </motion.div>
+      
+      <DeveloperCredit />
     </div>
   );
 };

@@ -9,7 +9,8 @@ import {
   User, 
   Settings, 
   LogOut,
-  Camera
+  Camera,
+  Github
 } from 'lucide-react';
 
 const SidebarItem = ({ icon: Icon, label, to, active }) => {
@@ -59,10 +60,26 @@ const Sidebar = () => {
         <SidebarItem icon={PlusSquare} label="Create" to="/upload" active={location.pathname === '/upload'} />
         <SidebarItem icon={User} label="Profile" to="/profile" active={location.pathname === '/profile'} />
       </nav>
-
       <div className="pt-6 border-t border-slate-900 flex flex-col gap-2">
         <SidebarItem icon={Settings} label="Settings" to="/settings" active={location.pathname === '/settings'} />
         <SidebarItem icon={LogOut} label="Neural Exit" to="/logout" active={false} />
+      </div>
+
+      <div className="mt-auto px-4 pt-8">
+        <a 
+          href="https://github.com/evil-sandeep" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="flex items-center gap-3 group opacity-40 hover:opacity-100 transition-all duration-300 no-underline"
+        >
+          <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center group-hover:bg-cyan-500/20 group-hover:shadow-[0_0_15px_rgba(34,211,238,0.2)] transition-all">
+            <Github size={16} className="text-slate-500 group-hover:text-cyan-400" />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[9px] uppercase tracking-widest text-slate-500 font-bold">Developed by</span>
+            <span className="text-[10px] text-slate-400 group-hover:text-white font-pixel font-bold transition-colors">evil-sandeep</span>
+          </div>
+        </a>
       </div>
     </aside>
   );

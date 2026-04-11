@@ -107,9 +107,9 @@ app.get('/gallery/:id', async (req, res) => {
     const gallery = await Gallery.findById(req.params.id);
 
     if (!gallery) {
-      return res.status(410).json({ 
-        expired: true,
-        message: 'This gallery has expired or does not exist.' 
+      return res.status(404).json({ 
+        error: 'Not Found',
+        message: 'This gallery does not exist or has been deleted.' 
       });
     }
 
@@ -130,11 +130,11 @@ app.get('/gallery/:id', async (req, res) => {
 
     res.json(gallery);
   } catch (err) {
-    // Invalid ObjectId format also means not found
-    res.status(410).json({ 
-      expired: true,
-      message: 'Gallery not found or has expired.' 
-    });
+    if (err.name === 'CastError') {
+      return res.status(400).json({ error: 'Invalid ID', message: 'The provided gallery ID format is invalid.' });
+    }
+    console.error('Gallery Fetch Error:', err);
+    res.status(500).json({ message: 'Internal server error while fetching gallery.' });
   }
 });
 
@@ -238,22 +238,36 @@ app.post('/api/analytics/track', async (req, res) => {
 
 app.get('/api/images/download-all', async (req, res) => {
   try {
-    const images = await Image.find();
-    if (images.length === 0) {
-      return res.status(404).json({ message: 'No images found.' });
+    const { galleryId } = req.query;
+    let images = [];
+    let zipName = 'snapshare-archive.zip';
+
+    if (galleryId) {
+      const gallery = await Gallery.findById(galleryId);
+      if (!gallery) return res.status(404).json({ message: 'Gallery not found.' });
+      images = gallery.images.map(img => ({
+        url: img.url,
+        title: gallery.title,
+        id: img.public_id
+      }));
+      zipName = `snapshare-${gallery.title.replace(/\s+/g, '_')}.zip`;
+    } else {
+      images = await Image.find();
+      if (images.length === 0) return res.status(404).json({ message: 'No images found.' });
     }
 
     const archive = archiver('zip', { zlib: { level: 5 } });
-    res.attachment('snapshare-archive.zip');
+    res.attachment(zipName);
     archive.pipe(res);
 
     for (const img of images) {
       try {
         const response = await axios({ url: img.url, method: 'GET', responseType: 'stream' });
-        const filename = `${img.title.replace(/\s+/g, '_')}_${img._id}.jpg`;
+        const cleanTitle = (img.title || 'image').replace(/[^\w\s]/gi, '').replace(/\s+/g, '_');
+        const filename = `${cleanTitle}_${img.id || img._id}.jpg`;
         archive.append(response.data, { name: filename });
       } catch (e) {
-        console.error(`Failed to fetch image: ${img.url}`);
+        console.error(`Failed to fetch image for ZIP: ${img.url}`);
       }
     }
 

@@ -10,7 +10,7 @@ import PixelButton from '../components/PixelButton';
 const GalleryPage = () => {
   const { id } = useParams();
   const [images, setImages] = useState([]);
-  const [galleryTitle, setGalleryTitle] = useState('Gallery');
+  const [galleryTitle, setGalleryTitle] = useState('Shared Gallery');
   const [expiresAt, setExpiresAt] = useState(null);
   const [expired, setExpired] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -29,9 +29,9 @@ const GalleryPage = () => {
         } else {
           const response = await axios.get(`${apiUrl}/api/images`);
           setImages(response.data);
+          setGalleryTitle('Public Archive');
         }
       } catch (error) {
-        // 410 Gone = gallery expired or deleted
         if (error.response?.status === 410 || error.response?.status === 404) {
           setExpired(true);
         } else {
@@ -49,16 +49,20 @@ const GalleryPage = () => {
     setZipping(true);
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const url = id 
+        ? `${apiUrl}/api/images/download-all?galleryId=${id}`
+        : `${apiUrl}/api/images/download-all`;
+        
       const response = await axios({
-        url: `${apiUrl}/api/images/download-all`,
+        url,
         method: 'GET',
         responseType: 'blob',
       });
 
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'snapshare-archive.zip');
+      link.href = blobUrl;
+      link.setAttribute('download', id ? `snapshare-${galleryTitle}.zip` : 'snapshare-archive.zip');
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -71,13 +75,10 @@ const GalleryPage = () => {
   };
 
   const handleSingleDownload = (img) => {
-    // Cloudinary specific: add fl_attachment to the URL
-    // Standard Cloudinary URL format: .../upload/v12345/abc.jpg
-    // Force download: .../upload/fl_attachment/v12345/abc.jpg
     const downloadUrl = img.url.replace('/upload/', '/upload/fl_attachment/');
     const link = document.createElement('a');
     link.href = downloadUrl;
-    link.setAttribute('download', `${img.title}.jpg`);
+    link.setAttribute('download', `${img.title || 'snapshare-image'}.jpg`);
     document.body.appendChild(link);
     link.click();
     link.remove();
@@ -104,16 +105,16 @@ const GalleryPage = () => {
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-slate-800 border border-slate-700 mb-6">
             <ImageOff size={36} className="text-slate-500" />
           </div>
-          <h1 className="text-3xl font-black text-white tracking-tighter mb-3">Gallery Expired</h1>
+          <h1 className="text-3xl font-black text-white tracking-tighter mb-3">Gallery Not Found</h1>
           <p className="text-slate-400 mb-2">
-            This gallery and all its images have been permanently deleted.
+            This gallery does not exist or has expired and been permanently deleted.
           </p>
           <p className="text-slate-600 text-sm mb-8">
-            SnapShare galleries are automatically removed after <span className="text-slate-400 font-semibold">7 days</span> to protect privacy.
+            SnapShare galleries are automatically removed after <span className="text-slate-400 font-semibold">7 days</span>.
           </p>
           <div className="flex items-center justify-center gap-2 bg-amber-500/10 border border-amber-500/20 rounded-2xl px-5 py-3 text-amber-400 text-sm mb-8">
             <Clock size={15} />
-            <span>Links and QR codes expire after 7 days</span>
+            <span>Links and QR codes expire after a set period.</span>
           </div>
           <a
             href="/"
@@ -129,22 +130,32 @@ const GalleryPage = () => {
   // ── Loading Screen ───────────────────────────────────────────
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#080C10] flex items-center justify-center">
+      <div className="min-h-screen bg-[#080C10] flex items-center justify-center flex-col gap-4">
         <Loader2 className="text-cyan-400 animate-spin" size={40} />
+        <p className="font-pixel text-[10px] tracking-widest text-slate-700">EXTRACTING ASSETS...</p>
       </div>
     );
   }
 
   return (
-    <div className="px-8 py-12 max-w-[1600px] mx-auto min-h-screen">
+    <div className="px-8 py-12 max-w-[1600px] mx-auto min-h-screen relative z-10">
       <header className="mb-16 flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
         <div>
           <div className="flex items-center gap-4 mb-4">
             <Sparkles className="text-cyan-400" />
-            <span className="font-pixel text-xs tracking-widest text-cyan-400 uppercase">Live Data Archive</span>
+            <span className="font-pixel text-xs tracking-widest text-cyan-400 uppercase">
+              {id ? 'Shared Archive' : 'Global Mesh'}
+            </span>
           </div>
-          <h1 className="text-5xl font-bold tracking-tighter mb-4">Neural Exploration</h1>
-          <p className="text-slate-500 max-w-xl">Synchronizing with the global image mesh. Real-time assets extracted from the MongoDB mainframe.</p>
+          <h1 className="text-5xl font-black tracking-tighter mb-4 text-white uppercase italic">
+            {galleryTitle}
+          </h1>
+          <p className="text-slate-500 max-w-xl">
+            {id 
+              ? `Displaying images from the shared cluster. Auto-cleanup scheduled for ${expiresAt?.toLocaleDateString() || '7 days'}.`
+              : 'Synchronizing with the global image mesh. Real-time assets extracted from the MongoDB mainframe.'
+            }
+          </p>
         </div>
         
         <div className="flex gap-4">
@@ -156,24 +167,19 @@ const GalleryPage = () => {
             {zipping ? (
               <>
                 <Loader2 className="animate-spin text-cyan-400" size={18} />
-                <span>Zipping Data...</span>
+                <span>Creating ZIP...</span>
               </>
             ) : (
               <>
                 <Zap className="text-cyan-400" size={18} />
-                <span>Bulk Extract ZIP</span>
+                <span>{id ? 'Download Gallery' : 'Bulk Extract'}</span>
               </>
             )}
           </PixelButton>
         </div>
       </header>
 
-      {loading ? (
-        <div className="flex flex-col items-center justify-center py-40">
-          <Loader2 className="text-cyan-400 animate-spin mb-4" size={48} />
-          <p className="font-pixel text-[10px] tracking-widest text-slate-700">DECRYPTING ARCHIVE...</p>
-        </div>
-      ) : images.length > 0 ? (
+      {images.length > 0 ? (
         <Masonry
           breakpointCols={breakpointColumnsObj}
           className="flex -ml-6 w-auto"
@@ -181,7 +187,7 @@ const GalleryPage = () => {
         >
           {images.map((img, i) => (
             <motion.div
-              key={img._id || img.id}
+              key={img._id || img.id || i}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: i * 0.05 }}
@@ -192,30 +198,30 @@ const GalleryPage = () => {
                   whileHover={{ scale: 1.05 }}
                   transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                   src={img.url}
-                  alt={img.title}
+                  alt={img.title || 'Shared Moment'}
                   loading="lazy"
-                  className="w-full h-auto object-cover"
+                  className="w-full h-auto object-cover cursor-pointer"
                   onClick={() => setSelectedImage(img)}
                 />
                 
                 {/* Hover Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-6">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-bold text-lg leading-tight">{img.title}</h3>
+                    <h3 className="font-bold text-lg leading-tight text-white line-clamp-1">
+                      {img.title || 'Shared Moment'}
+                    </h3>
                     <div className="flex gap-2">
                       <button 
                         onClick={(e) => { e.stopPropagation(); handleSingleDownload(img); }}
                         className="p-2 glass rounded-lg hover:text-cyan-400 transition-colors"
+                        title="Download"
                       >
                         <Download size={18} />
-                      </button>
-                      <button className="p-2 glass rounded-lg hover:text-pink-500 transition-colors" onClick={(e) => e.stopPropagation()}>
-                        <Heart size={18} />
                       </button>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <p className="text-sm text-slate-400 lowercase">@{img.user}</p>
+                    <p className="text-sm text-slate-400 lowercase italic">@{img.user || 'guest'}</p>
                     <button 
                       onClick={() => setSelectedImage(img)}
                       className="flex items-center gap-1 text-xs font-bold text-cyan-400 border-b border-cyan-400/0 hover:border-cyan-400 transition-all"
@@ -231,21 +237,22 @@ const GalleryPage = () => {
         </Masonry>
       ) : (
         <div className="flex flex-col items-center justify-center py-40 border-2 border-dashed border-slate-800 rounded-3xl">
-          <p className="text-slate-600 font-pixel text-xs tracking-widest">NO ASSETS DETECTED IN MAIN CLUSTER</p>
+          <p className="text-slate-600 font-pixel text-xs tracking-widest">NO ASSETS DETECTED IN CLUSTER</p>
         </div>
       )}
 
       <AnimatePresence>
         {selectedImage && (
           <ImageModal 
-            image={selectedImage} 
+            image={{ ...selectedImage, title: selectedImage.title || 'Shared Moment', user: selectedImage.user || 'guest' }} 
             onClose={() => setSelectedImage(null)} 
             onDownload={() => handleSingleDownload(selectedImage)}
           />
         )}
       </AnimatePresence>
 
-      <footer className="mt-20 py-12 border-t border-slate-900 text-center">
+      <footer className="mt-20 py-12 border-t border-slate-900/50 text-center">
+        <p className="text-slate-600 text-xs uppercase tracking-widest mb-6 font-pixel">Network Synchronized</p>
         <PixelButton 
           className="!bg-slate-900 !text-slate-400 border border-slate-800 hover:!border-cyan-500/50"
           onClick={() => window.location.reload()}
