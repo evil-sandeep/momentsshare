@@ -1,0 +1,441 @@
+import React, { useState, useCallback } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Upload, X, CheckCircle2, AlertCircle, Sparkles,
+  Link2, Copy, Check, ImagePlus, Loader2, QrCode
+} from 'lucide-react';
+import axios from 'axios';
+import { QRCodeSVG } from 'qrcode.react';
+
+const MAX_FILES = 30;
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+// ---------- Step 1: Upload Screen ----------
+const UploadScreen = ({ onSuccess }) => {
+  const [files, setFiles] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [error, setError] = useState(null);
+
+  const onDrop = useCallback((accepted) => {
+    setError(null);
+    const remaining = MAX_FILES - files.length;
+    if (remaining <= 0) {
+      setError(`Maximum ${MAX_FILES} images allowed.`);
+      return;
+    }
+    const toAdd = accepted.slice(0, remaining).map(f =>
+      Object.assign(f, { preview: URL.createObjectURL(f), status: 'pending' })
+    );
+    if (accepted.length > remaining) {
+      setError(`Only ${remaining} more image(s) can be added (max ${MAX_FILES}).`);
+    }
+    setFiles(prev => [...prev, ...toAdd]);
+  }, [files]);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { 'image/*': [] },
+    maxFiles: MAX_FILES,
+    disabled: uploading,
+  });
+
+  const removeFile = (idx) => {
+    setFiles(prev => {
+      const next = [...prev];
+      URL.revokeObjectURL(next[idx].preview);
+      next.splice(idx, 1);
+      return next;
+    });
+  };
+
+  const handleUpload = async () => {
+    if (files.length === 0) return;
+    setUploading(true);
+    setProgress(0);
+    setError(null);
+
+    const formData = new FormData();
+    files.forEach(f => formData.append('images', f));
+    formData.append('title', `SnapShare_${Date.now()}`);
+
+    try {
+      // Simulate progress while uploading
+      const progressInterval = setInterval(() => {
+        setProgress(p => Math.min(p + 2, 90));
+      }, 80);
+
+      const res = await axios.post(`${API_URL}/upload-gallery`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      clearInterval(progressInterval);
+      setProgress(100);
+
+      setTimeout(() => {
+        onSuccess(res.data.galleryId, files.length);
+      }, 500);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Upload failed. Please try again.');
+      setUploading(false);
+      setProgress(0);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#080C10] flex flex-col items-center justify-start px-4 py-12">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="text-center mb-10"
+      >
+        <div className="inline-flex items-center gap-2 bg-cyan-500/10 border border-cyan-500/20 rounded-full px-4 py-1.5 text-cyan-400 text-xs font-bold tracking-widest uppercase mb-5">
+          <Sparkles size={12} />
+          SnapShare
+        </div>
+        <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-white mb-3">
+          Share Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-500">Moments</span>
+        </h1>
+        <p className="text-slate-400 max-w-md mx-auto text-sm md:text-base">
+          Upload up to {MAX_FILES} photos — get an instant QR code and shareable link.
+        </p>
+      </motion.div>
+
+      {/* Drop Zone */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.97 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.1, duration: 0.5 }}
+        className="w-full max-w-3xl mb-6"
+      >
+        <div
+          {...getRootProps()}
+          className={`relative cursor-pointer rounded-3xl border-2 border-dashed transition-all duration-300 p-12 flex flex-col items-center justify-center gap-4
+            ${isDragActive
+              ? 'border-cyan-400 bg-cyan-400/5 scale-[0.99]'
+              : 'border-slate-700 bg-slate-900/40 hover:border-slate-500 hover:bg-slate-900/60'
+            }
+            ${uploading ? 'pointer-events-none opacity-60' : ''}
+          `}
+        >
+          <input {...getInputProps()} />
+          <div className={`w-16 h-16 rounded-2xl flex items-center justify-center border-2 transition-all duration-300 ${isDragActive ? 'border-cyan-400 bg-cyan-400/10' : 'border-slate-700 bg-slate-800'}`}>
+            <ImagePlus size={28} className={isDragActive ? 'text-cyan-400' : 'text-slate-400'} />
+          </div>
+          <div className="text-center">
+            <p className="text-white font-semibold text-lg mb-1">
+              {isDragActive ? 'Drop your photos here!' : 'Drag & drop your photos'}
+            </p>
+            <p className="text-slate-500 text-sm">or <span className="text-cyan-400 underline underline-offset-2">click to browse</span></p>
+          </div>
+          <div className="flex items-center gap-6 text-xs text-slate-600 mt-2">
+            <span>JPG, PNG, WEBP</span>
+            <span>•</span>
+            <span>Max {MAX_FILES} images</span>
+            <span>•</span>
+            <span className={files.length >= MAX_FILES ? 'text-red-400 font-bold' : 'text-slate-600'}>
+              {files.length}/{MAX_FILES} selected
+            </span>
+          </div>
+        </div>
+
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -5 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-3 flex items-center gap-2 text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-2"
+          >
+            <AlertCircle size={14} /> {error}
+          </motion.div>
+        )}
+      </motion.div>
+
+      {/* Image Preview Grid */}
+      <AnimatePresence>
+        {files.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="w-full max-w-3xl mb-8"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm font-semibold text-slate-300">
+                {files.length} photo{files.length !== 1 ? 's' : ''} ready
+              </p>
+              {files.length < MAX_FILES && (
+                <span className="text-xs text-slate-500">{MAX_FILES - files.length} more can be added</span>
+              )}
+            </div>
+
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+              <AnimatePresence>
+                {files.map((file, idx) => (
+                  <motion.div
+                    key={file.name + idx}
+                    layout
+                    initial={{ opacity: 0, scale: 0.7 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.5 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                    className="relative group aspect-square rounded-xl overflow-hidden bg-slate-800 border border-slate-700/50"
+                  >
+                    <img
+                      src={file.preview}
+                      alt=""
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                    {/* Remove button */}
+                    {!uploading && (
+                      <button
+                        onClick={() => removeFile(idx)}
+                        className="absolute top-1 right-1 w-5 h-5 bg-black/70 hover:bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 z-10"
+                        title="Remove"
+                      >
+                        <X size={10} />
+                      </button>
+                    )}
+                    {/* Uploading overlay */}
+                    {uploading && (
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                        <Loader2 size={16} className="animate-spin text-cyan-400" />
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Upload Button + Progress */}
+      <AnimatePresence>
+        {files.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="w-full max-w-3xl flex flex-col items-center gap-4"
+          >
+            {uploading && (
+              <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                <motion.div
+                  className="h-full bg-gradient-to-r from-cyan-400 to-violet-500 rounded-full"
+                  initial={{ width: '0%' }}
+                  animate={{ width: `${progress}%` }}
+                  transition={{ duration: 0.3 }}
+                />
+              </div>
+            )}
+
+            <button
+              onClick={handleUpload}
+              disabled={uploading || files.length === 0}
+              className={`
+                group relative w-full md:w-auto px-12 py-4 rounded-2xl font-bold text-base transition-all duration-300
+                flex items-center justify-center gap-3
+                ${uploading
+                  ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-cyan-500 to-violet-600 text-white hover:shadow-[0_0_40px_rgba(0,245,255,0.35)] hover:scale-[1.02] active:scale-[0.98]'
+                }
+              `}
+            >
+              {uploading ? (
+                <>
+                  <Loader2 size={20} className="animate-spin" />
+                  Uploading {progress}%...
+                </>
+              ) : (
+                <>
+                  <Upload size={20} />
+                  Upload {files.length} Photo{files.length !== 1 ? 's' : ''}
+                </>
+              )}
+            </button>
+
+            {!uploading && (
+              <button
+                onClick={() => setFiles([])}
+                className="text-xs text-slate-600 hover:text-slate-400 transition-colors"
+              >
+                Clear all
+              </button>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Empty state hint */}
+      {files.length === 0 && (
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="text-slate-700 text-xs tracking-widest uppercase mt-4"
+        >
+          Your gallery will be ready instantly ✦
+        </motion.p>
+      )}
+    </div>
+  );
+};
+
+
+// ---------- Step 2: Success / Share Screen ----------
+const ShareScreen = ({ galleryId, imageCount, onReset }) => {
+  const shareUrl = `${window.location.origin}/gallery/${galleryId}`;
+  const [copied, setCopied] = useState(false);
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    });
+  };
+
+  return (
+    <div className="min-h-screen bg-[#080C10] flex flex-col items-center justify-center px-4 py-12">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+        className="w-full max-w-lg"
+      >
+        {/* Success badge */}
+        <div className="text-center mb-8">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 18, delay: 0.1 }}
+            className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 mb-4 shadow-[0_0_30px_rgba(0,245,255,0.4)]"
+          >
+            <CheckCircle2 size={32} className="text-white" />
+          </motion.div>
+          <h2 className="text-3xl font-black text-white tracking-tighter mb-2">Gallery Created!</h2>
+          <p className="text-slate-400 text-sm">
+            {imageCount} photo{imageCount !== 1 ? 's' : ''} uploaded · Share with anyone
+          </p>
+        </div>
+
+        {/* QR Code Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-slate-900/60 border border-slate-700/50 rounded-3xl p-8 mb-4 flex flex-col items-center gap-6 backdrop-blur-sm"
+        >
+          <div className="flex items-center gap-2 text-cyan-400 text-xs font-bold tracking-widest uppercase">
+            <QrCode size={14} />
+            Scan to open gallery
+          </div>
+
+          {/* QR Code */}
+          <div className="p-4 bg-white rounded-2xl shadow-[0_0_40px_rgba(0,245,255,0.15)]">
+            <QRCodeSVG
+              value={shareUrl}
+              size={200}
+              bgColor="#ffffff"
+              fgColor="#080C10"
+              level="H"
+              includeMargin={false}
+            />
+          </div>
+
+          <p className="text-slate-500 text-xs text-center">
+            Anyone with this QR code or link can view the gallery
+          </p>
+        </motion.div>
+
+        {/* Shareable Link */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="bg-slate-900/60 border border-slate-700/50 rounded-2xl p-4 mb-6 backdrop-blur-sm"
+        >
+          <p className="text-xs text-slate-500 font-semibold uppercase tracking-widest mb-2 flex items-center gap-1">
+            <Link2 size={11} /> Shareable Link
+          </p>
+          <div className="flex items-center gap-2">
+            <p className="flex-1 text-cyan-400 text-sm font-mono truncate bg-slate-800/60 px-3 py-2 rounded-xl border border-slate-700/50">
+              {shareUrl}
+            </p>
+            <button
+              onClick={copyLink}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200 shrink-0 ${
+                copied
+                  ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                  : 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/20'
+              }`}
+            >
+              {copied ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> Copy</>}
+            </button>
+          </div>
+        </motion.div>
+
+        {/* Actions */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="flex flex-col sm:flex-row gap-3"
+        >
+          <a
+            href={shareUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 text-center py-3 rounded-2xl bg-gradient-to-r from-cyan-500 to-violet-600 text-white font-bold text-sm hover:shadow-[0_0_30px_rgba(0,245,255,0.3)] hover:scale-[1.02] transition-all duration-200"
+          >
+            Open Gallery →
+          </a>
+          <button
+            onClick={onReset}
+            className="flex-1 py-3 rounded-2xl bg-slate-800 text-slate-300 font-bold text-sm hover:bg-slate-700 transition-all duration-200 border border-slate-700"
+          >
+            Upload More Photos
+          </button>
+        </motion.div>
+      </motion.div>
+    </div>
+  );
+};
+
+
+// ---------- Main Component ----------
+const UploadPage = () => {
+  const [step, setStep] = useState('upload'); // 'upload' | 'share'
+  const [galleryId, setGalleryId] = useState(null);
+  const [imageCount, setImageCount] = useState(0);
+
+  const handleSuccess = (id, count) => {
+    setGalleryId(id);
+    setImageCount(count);
+    setStep('share');
+  };
+
+  const handleReset = () => {
+    setGalleryId(null);
+    setImageCount(0);
+    setStep('upload');
+  };
+
+  return (
+    <AnimatePresence mode="wait">
+      {step === 'upload' ? (
+        <motion.div key="upload" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <UploadScreen onSuccess={handleSuccess} />
+        </motion.div>
+      ) : (
+        <motion.div key="share" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <ShareScreen galleryId={galleryId} imageCount={imageCount} onReset={handleReset} />
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
+export default UploadPage;

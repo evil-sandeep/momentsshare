@@ -1,0 +1,209 @@
+import React, { useState, useEffect } from 'react';
+import Masonry from 'react-masonry-css';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Download, Maximize2, Heart, Sparkles, Loader2, Zap } from 'lucide-react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import ImageModal from '../components/ImageModal';
+import PixelButton from '../components/PixelButton';
+
+const GalleryPage = () => {
+  const { id } = useParams();
+  const [images, setImages] = useState([]);
+  const [galleryTitle, setGalleryTitle] = useState('Gallery');
+  const [loading, setLoading] = useState(true);
+  const [zipping, setZipping] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        if (id) {
+          // Fetch specific shared gallery
+          const response = await axios.get(`${apiUrl}/gallery/${id}`);
+          setImages(response.data.images || []);
+          setGalleryTitle(response.data.title || 'Shared Gallery');
+        } else {
+          // Fallback: all images
+          const response = await axios.get(`${apiUrl}/api/images`);
+          setImages(response.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch gallery', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchImages();
+  }, [id]);
+
+  const handleDownloadAll = async () => {
+    if (images.length === 0) return;
+    setZipping(true);
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const response = await axios({
+        url: `${apiUrl}/api/images/download-all`,
+        method: 'GET',
+        responseType: 'blob',
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'snapshare-archive.zip');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("ZIP Download failed", error);
+      alert("Failed to generate archive.");
+    } finally {
+      setZipping(false);
+    }
+  };
+
+  const handleSingleDownload = (img) => {
+    // Cloudinary specific: add fl_attachment to the URL
+    // Standard Cloudinary URL format: .../upload/v12345/abc.jpg
+    // Force download: .../upload/fl_attachment/v12345/abc.jpg
+    const downloadUrl = img.url.replace('/upload/', '/upload/fl_attachment/');
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.setAttribute('download', `${img.title}.jpg`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  };
+
+  const breakpointColumnsObj = {
+    default: 4,
+    1100: 3,
+    700: 2,
+    500: 1
+  };
+
+  return (
+    <div className="px-8 py-12 max-w-[1600px] mx-auto min-h-screen">
+      <header className="mb-16 flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
+        <div>
+          <div className="flex items-center gap-4 mb-4">
+            <Sparkles className="text-cyan-400" />
+            <span className="font-pixel text-xs tracking-widest text-cyan-400 uppercase">Live Data Archive</span>
+          </div>
+          <h1 className="text-5xl font-bold tracking-tighter mb-4">Neural Exploration</h1>
+          <p className="text-slate-500 max-w-xl">Synchronizing with the global image mesh. Real-time assets extracted from the MongoDB mainframe.</p>
+        </div>
+        
+        <div className="flex gap-4">
+          <PixelButton 
+            onClick={handleDownloadAll} 
+            disabled={zipping || images.length === 0}
+            className={`!bg-slate-900 border border-slate-800 hover:!border-cyan-500/50 min-w-[200px] ${zipping ? 'opacity-70' : ''}`}
+          >
+            {zipping ? (
+              <>
+                <Loader2 className="animate-spin text-cyan-400" size={18} />
+                <span>Zipping Data...</span>
+              </>
+            ) : (
+              <>
+                <Zap className="text-cyan-400" size={18} />
+                <span>Bulk Extract ZIP</span>
+              </>
+            )}
+          </PixelButton>
+        </div>
+      </header>
+
+      {loading ? (
+        <div className="flex flex-col items-center justify-center py-40">
+          <Loader2 className="text-cyan-400 animate-spin mb-4" size={48} />
+          <p className="font-pixel text-[10px] tracking-widest text-slate-700">DECRYPTING ARCHIVE...</p>
+        </div>
+      ) : images.length > 0 ? (
+        <Masonry
+          breakpointCols={breakpointColumnsObj}
+          className="flex -ml-6 w-auto"
+          columnClassName="pl-6 bg-clip-padding"
+        >
+          {images.map((img, i) => (
+            <motion.div
+              key={img._id || img.id}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: i * 0.05 }}
+              className="mb-6 relative group"
+            >
+              <div className="relative rounded-2xl overflow-hidden glass border-slate-800 transition-all duration-500 group-hover:border-cyan-500/30 group-hover:shadow-[0_0_30px_rgba(0,245,255,0.1)]">
+                <motion.img
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                  src={img.url}
+                  alt={img.title}
+                  loading="lazy"
+                  className="w-full h-auto object-cover"
+                  onClick={() => setSelectedImage(img)}
+                />
+                
+                {/* Hover Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-bold text-lg leading-tight">{img.title}</h3>
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); handleSingleDownload(img); }}
+                        className="p-2 glass rounded-lg hover:text-cyan-400 transition-colors"
+                      >
+                        <Download size={18} />
+                      </button>
+                      <button className="p-2 glass rounded-lg hover:text-pink-500 transition-colors" onClick={(e) => e.stopPropagation()}>
+                        <Heart size={18} />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-slate-400 lowercase">@{img.user}</p>
+                    <button 
+                      onClick={() => setSelectedImage(img)}
+                      className="flex items-center gap-1 text-xs font-bold text-cyan-400 border-b border-cyan-400/0 hover:border-cyan-400 transition-all"
+                    >
+                      <Maximize2 size={12} />
+                      Expand
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </Masonry>
+      ) : (
+        <div className="flex flex-col items-center justify-center py-40 border-2 border-dashed border-slate-800 rounded-3xl">
+          <p className="text-slate-600 font-pixel text-xs tracking-widest">NO ASSETS DETECTED IN MAIN CLUSTER</p>
+        </div>
+      )}
+
+      <AnimatePresence>
+        {selectedImage && (
+          <ImageModal 
+            image={selectedImage} 
+            onClose={() => setSelectedImage(null)} 
+            onDownload={() => handleSingleDownload(selectedImage)}
+          />
+        )}
+      </AnimatePresence>
+
+      <footer className="mt-20 py-12 border-t border-slate-900 text-center">
+        <PixelButton 
+          className="!bg-slate-900 !text-slate-400 border border-slate-800 hover:!border-cyan-500/50"
+          onClick={() => window.location.reload()}
+        >
+          Sync Manual Cache
+        </PixelButton>
+      </footer>
+    </div>
+  );
+};
+
+export default GalleryPage;
