@@ -1,12 +1,12 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Upload, X, CheckCircle2, AlertCircle, Sparkles,
-  Link2, Copy, Check, ImagePlus, Loader2, QrCode, Clock
+  Link2, Copy, Check, ImagePlus, Loader2, QrCode, Clock, Download
 } from 'lucide-react';
 import axios from 'axios';
-import { QRCodeSVG } from 'qrcode.react';
+import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
 
 const MAX_FILES = 30;
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -289,6 +289,7 @@ const UploadScreen = ({ onSuccess }) => {
 const ShareScreen = ({ galleryId, imageCount, expiresAt, onReset }) => {
   const shareUrl = `${window.location.origin}/gallery/${galleryId}`;
   const [copied, setCopied] = useState(false);
+  const qrRef = useRef();
 
   const expiryDate = expiresAt
     ? new Date(expiresAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
@@ -299,6 +300,22 @@ const ShareScreen = ({ galleryId, imageCount, expiresAt, onReset }) => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     });
+  };
+
+  const downloadQRCode = () => {
+    const canvas = qrRef.current?.querySelector('canvas');
+    if (!canvas) return;
+
+    const pngUrl = canvas
+      .toDataURL('image/png')
+      .replace('image/png', 'image/octet-stream');
+    
+    const downloadLink = document.createElement('a');
+    downloadLink.href = pngUrl;
+    downloadLink.download = `snapshare-qr-${galleryId}.png`;
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
   };
 
   return (
@@ -342,15 +359,25 @@ const ShareScreen = ({ galleryId, imageCount, expiresAt, onReset }) => {
           </div>
 
           {/* QR Code */}
-          <div className="p-4 bg-white rounded-2xl shadow-[0_0_40px_rgba(0,245,255,0.15)]">
-            <QRCodeSVG
-              value={shareUrl}
-              size={200}
-              bgColor="#ffffff"
-              fgColor="#080C10"
-              level="H"
-              includeMargin={false}
-            />
+          <div className="flex flex-col items-center gap-6">
+            <div ref={qrRef} className="p-4 bg-white rounded-2xl shadow-[0_0_40px_rgba(0,245,255,0.15)]">
+              <QRCodeCanvas
+                value={shareUrl}
+                size={200}
+                bgColor="#ffffff"
+                fgColor="#080C10"
+                level="H"
+                includeMargin={false}
+              />
+            </div>
+
+            <button
+              onClick={downloadQRCode}
+              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white text-sm font-bold border border-white/10 transition-all duration-200"
+            >
+              <Download size={16} className="text-cyan-400" />
+              Download PNG
+            </button>
           </div>
 
           <p className="text-slate-500 text-xs text-center">
