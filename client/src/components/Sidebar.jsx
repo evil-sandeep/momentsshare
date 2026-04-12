@@ -4,9 +4,7 @@ import { motion } from 'framer-motion';
 import { 
   Home, 
   Compass, 
-  Bell, 
   PlusSquare, 
-  User, 
   Settings, 
   LogOut,
   Camera
@@ -71,9 +69,7 @@ const Sidebar = () => {
       <nav className="flex flex-col gap-2 flex-1">
         <SidebarItem icon={Home} label="Home" to="/" active={location.pathname === '/'} />
         <SidebarItem icon={Compass} label="Archive" to="/gallery" active={location.pathname === '/gallery'} />
-        <SidebarItem icon={Bell} label="Notifications" to="/notifications" active={location.pathname === '/notifications'} />
         <SidebarItem icon={PlusSquare} label="Create" to="/upload" active={location.pathname === '/upload'} />
-        <SidebarItem icon={User} label="Profile" to="/profile" active={location.pathname === '/profile'} />
       </nav>
       <div className="pt-6 border-t border-slate-900 flex flex-col gap-2">
         <SidebarItem icon={Settings} label="Settings" to="/settings" active={location.pathname === '/settings'} />
