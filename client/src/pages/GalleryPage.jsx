@@ -236,9 +236,23 @@ const GalleryPage = () => {
           ))}
         </Masonry>
       ) : (
-        <div className="flex flex-col items-center justify-center py-40 border-2 border-dashed border-slate-800 rounded-3xl">
-          <p className="text-slate-600 font-pixel text-xs tracking-widest">NO ASSETS DETECTED IN CLUSTER</p>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex flex-col items-center justify-center py-40 glass rounded-[2rem] border-slate-800/50 bg-slate-900/10"
+        >
+          <div className="w-20 h-20 rounded-2xl bg-slate-800/50 flex items-center justify-center mb-6 border border-slate-700/50">
+            <ImageOff className="text-slate-600" size={32} />
+          </div>
+          <p className="text-slate-400 font-pixel text-[10px] tracking-[0.2em] uppercase mb-4">No Assets Syncing</p>
+          <h3 className="text-xl font-bold text-slate-700 mb-8">This cluster segment is currently empty.</h3>
+          <a 
+            href="/upload" 
+            className="px-8 py-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-bold tracking-widest uppercase hover:bg-cyan-500/20 transition-all"
+          >
+            Initiate First Sync →
+          </a>
+        </motion.div>
       )}
 
       <AnimatePresence>

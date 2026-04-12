@@ -180,9 +180,9 @@ app.post('/upload-gallery', upload.array('images', 30), async (req, res) => {
 
 app.get('/api/analytics', async (req, res) => {
   try {
-    let stats = await Analytics.findOne({ id: 'global_stats' });
+    let stats = await Analytics.findOne({ statsId: 'global_stats' });
     if (!stats) {
-      stats = new Analytics();
+      stats = new Analytics({ statsId: 'global_stats' });
       await stats.save();
     }
     res.json(stats);
@@ -194,9 +194,9 @@ app.get('/api/analytics', async (req, res) => {
 app.post('/api/analytics/track', async (req, res) => {
   try {
     const { type, visitorId } = req.body;
-    let stats = await Analytics.findOne({ id: 'global_stats' });
+    let stats = await Analytics.findOne({ statsId: 'global_stats' });
     if (!stats) {
-      stats = new Analytics();
+      stats = new Analytics({ statsId: 'global_stats' });
       await stats.save();
     }
 

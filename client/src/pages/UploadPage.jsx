@@ -3,8 +3,24 @@ import { useDropzone } from 'react-dropzone';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Upload, X, CheckCircle2, AlertCircle, Sparkles,
-  Link2, Copy, Check, ImagePlus, Loader2, QrCode, Clock, Download, Github
+  Link2, Copy, Check, ImagePlus, Loader2, QrCode, Clock, Download
 } from 'lucide-react';
+
+const GithubIcon = ({ size = 20, className = "" }) => (
+  <svg 
+    width={size} 
+    height={size} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className={className}
+  >
+    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
+  </svg>
+);
 import axios from 'axios';
 import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
 
@@ -26,7 +42,7 @@ const DeveloperCredit = () => (
       className="flex items-center gap-3 no-underline"
     >
       <div className="w-8 h-8 rounded-xl bg-slate-950 flex items-center justify-center group-hover:bg-cyan-500/10 group-hover:shadow-[0_0_20px_rgba(0,245,255,0.1)] transition-all">
-        <Github size={16} className="text-slate-500 group-hover:text-cyan-400" />
+        <GithubIcon size={16} className="text-slate-500 group-hover:text-cyan-400" />
       </div>
       <div className="flex flex-col">
         <span className="text-[8px] uppercase tracking-widest text-slate-600 font-bold group-hover:text-cyan-500/80 transition-colors">Developed by</span>
