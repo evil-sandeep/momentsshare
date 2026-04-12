@@ -22,7 +22,7 @@ const ImageModal = ({ image, onClose, onDownload }) => {
     >
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-slate-950/90 backdrop-blur-2xl" 
+        className="absolute inset-0 bg-[#050000]/95 backdrop-blur-3xl" 
         onClick={onClose}
       />
 
@@ -30,8 +30,8 @@ const ImageModal = ({ image, onClose, onDownload }) => {
         {/* Main Image View */}
         <div className="flex-1 relative w-full h-full flex items-center justify-center overflow-hidden rounded-3xl group">
           {/* Pixel corners */}
-          <div className="absolute top-4 left-4 w-12 h-12 border-t-2 border-l-2 border-cyan-400 opacity-40" />
-          <div className="absolute bottom-4 right-4 w-12 h-12 border-b-2 border-r-2 border-cyan-400 opacity-40" />
+          <div className="absolute top-4 left-4 w-12 h-12 border-t-2 border-l-2 border-red-600 opacity-60" />
+          <div className="absolute bottom-4 right-4 w-12 h-12 border-b-2 border-r-2 border-red-600 opacity-60" />
           
           <motion.img
             layoutId={`image-${image._id || image.id}`}
@@ -57,9 +57,9 @@ const ImageModal = ({ image, onClose, onDownload }) => {
           animate={{ opacity: 1, x: 0 }}
           className="w-full md:w-80 flex flex-col gap-6"
         >
-          <div className="glass p-8 rounded-3xl border-slate-800">
-            <h2 className="text-2xl font-bold mb-2">{image.title}</h2>
-            <p className="text-slate-400 text-sm mb-6">Uploaded by <span className="text-cyan-400 font-medium">@{image.user}</span></p>
+          <div className="glass p-8 rounded-3xl border-zinc-900">
+            <h2 className="text-2xl font-bold mb-2 text-white">{image.title}</h2>
+            <p className="text-zinc-400 text-sm mb-6">Uploaded by <span className="text-[#FF5252] font-medium font-pixel">@{image.user}</span></p>
             
             <div className="flex flex-col gap-3">
               <PixelButton className="w-full" onClick={onDownload}>
@@ -67,18 +67,18 @@ const ImageModal = ({ image, onClose, onDownload }) => {
                 Download High-Res
               </PixelButton>
               <div className="flex gap-2">
-                <button className="flex-1 glass py-3 rounded-xl flex items-center justify-center gap-2 hover:border-slate-600 transition-all font-bold text-sm">
+                <button className="flex-1 glass py-3 rounded-xl flex items-center justify-center gap-2 hover:border-zinc-600 transition-all font-bold text-sm">
                   <Share2 size={16} /> Share
                 </button>
-                <button className="flex-1 glass py-3 rounded-xl flex items-center justify-center gap-2 hover:border-slate-600 transition-all font-bold text-sm">
+                <button className="flex-1 glass py-3 rounded-xl flex items-center justify-center gap-2 hover:border-zinc-600 transition-all font-bold text-sm">
                   <Info size={16} /> Details
                 </button>
               </div>
             </div>
           </div>
 
-          <div className="glass p-6 rounded-3xl border-slate-800 flex-1">
-            <h3 className="font-pixel text-[10px] tracking-widest text-slate-500 uppercase mb-4">Neural Metadata</h3>
+          <div className="glass p-6 rounded-3xl border-red-950 flex-1">
+            <h3 className="font-pixel text-[10px] tracking-widest text-zinc-600 uppercase mb-4">Neural Metadata</h3>
             <div className="space-y-4">
               {[
                 { label: 'Format', value: 'Lossless WebP' },
@@ -87,20 +87,20 @@ const ImageModal = ({ image, onClose, onDownload }) => {
                 { label: 'Asset ID', value: (image._id || image.id).substring(0, 8).toUpperCase() }
               ].map(item => (
                 <div key={item.label} className="flex justify-between text-xs">
-                  <span className="text-slate-600 uppercase font-medium">{item.label}</span>
-                  <span className="text-slate-300 font-mono">{item.value}</span>
+                  <span className="text-zinc-600 uppercase font-medium">{item.label}</span>
+                  <span className="text-zinc-300 font-mono">{item.value}</span>
                 </div>
               ))}
             </div>
             
-            <div className="mt-8 pt-6 border-t border-slate-800">
-               <div className="flex items-center gap-2 px-2 py-1 rounded-lg bg-cyan-400/5 border border-cyan-400/10 mb-4">
-                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-                  <span className="text-[10px] font-bold text-cyan-400 tracking-wider">AI TAGGING ACTIVE</span>
+            <div className="mt-8 pt-6 border-t border-zinc-900">
+               <div className="flex items-center gap-2 px-2 py-1 rounded-lg bg-[#00FAD9]/5 border border-[#00FAD9]/10 mb-4">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#00FAD9] animate-pulse" />
+                  <span className="text-[10px] font-bold text-[#00FAD9] tracking-wider font-pixel">AI TAGGING ACTIVE</span>
                </div>
                <div className="flex flex-wrap gap-2">
                  {['#cyber', '#neon', '#archive', '#download'].map(tag => (
-                   <span key={tag} className="text-[10px] font-mono text-slate-500 hover:text-cyan-400 cursor-pointer">{tag}</span>
+                   <span key={tag} className="text-[10px] font-mono text-zinc-500 hover:text-red-400 cursor-pointer">{tag}</span>
                  ))}
                </div>
             </div>

@@ -33,7 +33,7 @@ const DeveloperCredit = () => (
     animate={{ opacity: 0.5 }}
     whileHover={{ opacity: 1, y: -2 }}
     transition={{ duration: 0.5 }}
-    className="fixed bottom-6 flex items-center gap-3 px-4 py-2 rounded-2xl bg-slate-900/40 backdrop-blur-md border border-slate-800/50 group cursor-pointer"
+    className="fixed bottom-6 flex items-center gap-3 px-4 py-2 rounded-2xl bg-red-950/20 backdrop-blur-md border border-red-900/30 group cursor-pointer"
   >
     <a 
       href="https://github.com/evil-sandeep" 
@@ -41,12 +41,12 @@ const DeveloperCredit = () => (
       rel="noopener noreferrer"
       className="flex items-center gap-3 no-underline"
     >
-      <div className="w-8 h-8 rounded-xl bg-slate-950 flex items-center justify-center group-hover:bg-cyan-500/10 group-hover:shadow-[0_0_20px_rgba(0,245,255,0.1)] transition-all">
-        <GithubIcon size={16} className="text-slate-500 group-hover:text-cyan-400" />
+      <div className="w-8 h-8 rounded-xl bg-black flex items-center justify-center group-hover:bg-red-500/10 group-hover:shadow-[0_0_20px_rgba(255,0,0,0.15)] transition-all">
+        <GithubIcon size={16} className="text-zinc-500 group-hover:text-primary" />
       </div>
       <div className="flex flex-col">
-        <span className="text-[8px] uppercase tracking-widest text-slate-600 font-bold group-hover:text-cyan-500/80 transition-colors">Developed by</span>
-        <span className="text-[11px] text-slate-400 group-hover:text-white font-pixel font-black tracking-tight transition-colors">evil-sandeep</span>
+        <span className="text-[8px] uppercase tracking-widest text-zinc-600 font-bold group-hover:text-red-500 transition-colors">Developed by</span>
+        <span className="text-[11px] text-zinc-400 group-hover:text-white font-pixel font-black tracking-tight transition-colors">evil-sandeep</span>
       </div>
     </a>
   </motion.div>
@@ -73,7 +73,7 @@ const UploadScreen = ({ onSuccess }) => {
       setError(`Only ${remaining} more image(s) can be added (max ${MAX_FILES}).`);
     }
     setFiles(prev => [...prev, ...toAdd]);
-  }, [files]);
+  }, [files, uploading]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -133,14 +133,14 @@ const UploadScreen = ({ onSuccess }) => {
         transition={{ duration: 0.6 }}
         className="text-center mb-10"
       >
-        <div className="inline-flex items-center gap-2 bg-cyan-500/10 border border-cyan-500/20 rounded-full px-4 py-1.5 text-cyan-400 text-xs font-bold tracking-widest uppercase mb-5">
+        <div className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/20 rounded-full px-4 py-1.5 text-primary text-xs font-bold tracking-widest uppercase mb-5">
           <Sparkles size={12} />
           SnapShare
         </div>
         <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-white mb-3">
-          Share Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-500">Moments</span>
+          Share Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF5252] to-[#00FAD9]">Moments</span>
         </h1>
-        <p className="text-slate-400 max-w-md mx-auto text-sm md:text-base">
+        <p className="text-zinc-400 max-w-md mx-auto text-sm md:text-base">
           Upload up to {MAX_FILES} photos — get an instant QR code and shareable link.
         </p>
       </motion.div>
@@ -156,28 +156,28 @@ const UploadScreen = ({ onSuccess }) => {
           {...getRootProps()}
           className={`relative cursor-pointer rounded-3xl border-2 border-dashed transition-all duration-300 p-12 flex flex-col items-center justify-center gap-4
             ${isDragActive
-              ? 'border-cyan-400 bg-cyan-400/5 scale-[0.99]'
-              : 'border-slate-700 bg-slate-900/40 hover:border-slate-500 hover:bg-slate-900/60'
+              ? 'border-primary bg-primary/5 scale-[0.99]'
+              : 'border-red-950 bg-black/40 hover:border-red-800 hover:bg-black/60'
             }
             ${uploading ? 'pointer-events-none opacity-60' : ''}
           `}
         >
           <input {...getInputProps()} />
-          <div className={`w-16 h-16 rounded-2xl flex items-center justify-center border-2 transition-all duration-300 ${isDragActive ? 'border-cyan-400 bg-cyan-400/10' : 'border-slate-700 bg-slate-800'}`}>
-            <ImagePlus size={28} className={isDragActive ? 'text-cyan-400' : 'text-slate-400'} />
+          <div className={`w-16 h-16 rounded-2xl flex items-center justify-center border-2 transition-all duration-300 ${isDragActive ? 'border-primary bg-primary/10' : 'border-red-950 bg-red-950/20'}`}>
+            <ImagePlus size={28} className={isDragActive ? 'text-primary' : 'text-zinc-500'} />
           </div>
           <div className="text-center">
             <p className="text-white font-semibold text-lg mb-1">
               {isDragActive ? 'Drop your photos here!' : 'Drag & drop your photos'}
             </p>
-            <p className="text-slate-500 text-sm">or <span className="text-cyan-400 underline underline-offset-2">click to browse</span></p>
+            <p className="text-zinc-500 text-sm">or <span className="text-primary underline underline-offset-2">click to browse</span></p>
           </div>
-          <div className="flex items-center gap-6 text-xs text-slate-600 mt-2">
+          <div className="flex items-center gap-6 text-xs text-zinc-600 mt-2">
             <span>JPG, PNG, WEBP</span>
             <span>•</span>
             <span>Max {MAX_FILES} images</span>
             <span>•</span>
-            <span className={files.length >= MAX_FILES ? 'text-red-400 font-bold' : 'text-slate-600'}>
+            <span className={files.length >= MAX_FILES ? 'text-primary font-bold' : 'text-zinc-600'}>
               {files.length}/{MAX_FILES} selected
             </span>
           </div>
@@ -187,7 +187,7 @@ const UploadScreen = ({ onSuccess }) => {
           <motion.div
             initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mt-3 flex items-center gap-2 text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-2"
+            className="mt-3 flex items-center gap-2 text-primary text-sm bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-2"
           >
             <AlertCircle size={14} /> {error}
           </motion.div>
@@ -204,11 +204,11 @@ const UploadScreen = ({ onSuccess }) => {
             className="w-full max-w-3xl mb-8"
           >
             <div className="flex items-center justify-between mb-4">
-              <p className="text-sm font-semibold text-slate-300">
+              <p className="text-sm font-semibold text-zinc-300">
                 {files.length} photo{files.length !== 1 ? 's' : ''} ready
               </p>
               {files.length < MAX_FILES && (
-                <span className="text-xs text-slate-500">{MAX_FILES - files.length} more can be added</span>
+                <span className="text-xs text-zinc-500">{MAX_FILES - files.length} more can be added</span>
               )}
             </div>
 
@@ -222,7 +222,7 @@ const UploadScreen = ({ onSuccess }) => {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.5 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                    className="relative group aspect-square rounded-xl overflow-hidden bg-slate-800 border border-slate-700/50"
+                    className="relative group aspect-square rounded-xl overflow-hidden bg-zinc-800 border border-zinc-700/50"
                   >
                     <img
                       src={file.preview}
@@ -242,7 +242,7 @@ const UploadScreen = ({ onSuccess }) => {
                     {/* Uploading overlay */}
                     {uploading && (
                       <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                        <Loader2 size={16} className="animate-spin text-cyan-400" />
+                        <Loader2 size={16} className="animate-spin text-red-500" />
                       </div>
                     )}
                   </motion.div>
@@ -263,9 +263,9 @@ const UploadScreen = ({ onSuccess }) => {
             className="w-full max-w-3xl flex flex-col items-center gap-4"
           >
             {uploading && (
-              <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+              <div className="w-full bg-zinc-800 rounded-full h-1.5 overflow-hidden">
                 <motion.div
-                  className="h-full bg-gradient-to-r from-cyan-400 to-violet-500 rounded-full"
+                  className="h-full bg-gradient-to-r from-primary to-secondary rounded-full"
                   initial={{ width: '0%' }}
                   animate={{ width: `${progress}%` }}
                   transition={{ duration: 0.3 }}
@@ -280,8 +280,8 @@ const UploadScreen = ({ onSuccess }) => {
                 group relative w-full md:w-auto px-12 py-4 rounded-2xl font-bold text-base transition-all duration-300
                 flex items-center justify-center gap-3
                 ${uploading
-                  ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-cyan-500 to-violet-600 text-white hover:shadow-[0_0_40px_rgba(0,245,255,0.35)] hover:scale-[1.02] active:scale-[0.98]'
+                  ? 'bg-zinc-950/40 text-zinc-900 cursor-not-allowed'
+                  : 'bg-[#FF5252] text-white hover:shadow-[0_0_40px_rgba(255,82,82,0.35)] hover:scale-[1.02] active:scale-[0.98]'
                 }
               `}
             >
@@ -301,7 +301,7 @@ const UploadScreen = ({ onSuccess }) => {
             {!uploading && (
               <button
                 onClick={() => setFiles([])}
-                className="text-xs text-slate-600 hover:text-slate-400 transition-colors"
+                className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors"
               >
                 Clear all
               </button>
@@ -316,7 +316,7 @@ const UploadScreen = ({ onSuccess }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="text-slate-700 text-xs tracking-widest uppercase mt-4"
+          className="text-zinc-700 text-xs tracking-widest uppercase mt-4"
         >
           Your gallery will be ready instantly ✦
         </motion.p>
@@ -375,12 +375,12 @@ const ShareScreen = ({ galleryId, imageCount, expiresAt, onReset }) => {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: 'spring', stiffness: 300, damping: 18, delay: 0.1 }}
-            className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 mb-4 shadow-[0_0_30px_rgba(0,245,255,0.4)]"
+            className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-red-500 to-secondary mb-4 shadow-[0_0_30px_rgba(255,0,0,0.5)]"
           >
             <CheckCircle2 size={32} className="text-white" />
           </motion.div>
           <h2 className="text-3xl font-black text-white tracking-tighter mb-2">Gallery Created!</h2>
-          <p className="text-slate-400 text-sm">
+          <p className="text-zinc-400 text-sm">
             {imageCount} photo{imageCount !== 1 ? 's' : ''} uploaded · Share with anyone
           </p>
           <div className="mt-3 inline-flex items-center gap-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full px-3 py-1 text-amber-400 text-xs">
@@ -394,9 +394,9 @@ const ShareScreen = ({ galleryId, imageCount, expiresAt, onReset }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-slate-900/60 border border-slate-700/50 rounded-3xl p-8 mb-4 flex flex-col items-center gap-6 backdrop-blur-sm"
+          className="bg-zinc-900/60 border border-zinc-700/50 rounded-3xl p-8 mb-4 flex flex-col items-center gap-6 backdrop-blur-sm"
         >
-          <div className="flex items-center gap-2 text-cyan-400 text-xs font-bold tracking-widest uppercase">
+          <div className="flex items-center gap-2 text-red-500 text-xs font-bold tracking-widest uppercase">
             <QrCode size={14} />
             Scan to open gallery
           </div>
@@ -408,22 +408,22 @@ const ShareScreen = ({ galleryId, imageCount, expiresAt, onReset }) => {
                 value={shareUrl}
                 size={200}
                 bgColor="#ffffff"
-                fgColor="#080C10"
+                fgColor="#FF5252"
                 level="H"
                 includeMargin={false}
               />
             </div>
 
-            <button
-              onClick={downloadQRCode}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white text-sm font-bold border border-white/10 transition-all duration-200"
-            >
-              <Download size={16} className="text-cyan-400" />
-              Download PNG
-            </button>
+              <button
+                onClick={downloadQRCode}
+                className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white text-sm font-bold border border-white/10 transition-all duration-200"
+              >
+                <Download size={16} className="text-red-500" />
+                Download PNG
+              </button>
           </div>
 
-          <p className="text-slate-500 text-xs text-center">
+          <p className="text-zinc-500 text-xs text-center">
             Anyone with this QR code or link can view the gallery
           </p>
         </motion.div>
@@ -433,13 +433,13 @@ const ShareScreen = ({ galleryId, imageCount, expiresAt, onReset }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-slate-900/60 border border-slate-700/50 rounded-2xl p-4 mb-6 backdrop-blur-sm"
+          className="bg-zinc-900/60 border border-zinc-700/50 rounded-2xl p-4 mb-6 backdrop-blur-sm"
         >
-          <p className="text-xs text-slate-500 font-semibold uppercase tracking-widest mb-2 flex items-center gap-1">
+          <p className="text-xs text-zinc-500 font-semibold uppercase tracking-widest mb-2 flex items-center gap-1">
             <Link2 size={11} /> Shareable Link
           </p>
           <div className="flex items-center gap-2">
-            <p className="flex-1 text-cyan-400 text-sm font-mono truncate bg-slate-800/60 px-3 py-2 rounded-xl border border-slate-700/50">
+            <p className="flex-1 text-primary text-sm font-mono truncate bg-red-950/20 px-3 py-2 rounded-xl border border-red-900/20">
               {shareUrl}
             </p>
             <button
@@ -447,7 +447,7 @@ const ShareScreen = ({ galleryId, imageCount, expiresAt, onReset }) => {
               className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200 shrink-0 ${
                 copied
                   ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                  : 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/20'
+                  : 'bg-red-500/10 text-primary border border-red-500/20 hover:bg-red-500/20'
               }`}
             >
               {copied ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> Copy</>}
@@ -466,13 +466,13 @@ const ShareScreen = ({ galleryId, imageCount, expiresAt, onReset }) => {
             href={shareUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 text-center py-3 rounded-2xl bg-gradient-to-r from-cyan-500 to-violet-600 text-white font-bold text-sm hover:shadow-[0_0_30px_rgba(0,245,255,0.3)] hover:scale-[1.02] transition-all duration-200"
+            className="flex-1 text-center py-3 rounded-2xl bg-[#FF5252] text-white font-black text-sm hover:shadow-[0_0_30px_rgba(255,82,82,0.3)] hover:scale-[1.02] transition-all duration-200"
           >
             Open Gallery →
           </a>
           <button
             onClick={onReset}
-            className="flex-1 py-3 rounded-2xl bg-slate-800 text-slate-300 font-bold text-sm hover:bg-slate-700 transition-all duration-200 border border-slate-700"
+            className="flex-1 py-3 rounded-2xl bg-zinc-800 text-zinc-300 font-bold text-sm hover:bg-zinc-700 transition-all duration-200 border border-zinc-700"
           >
             Upload More Photos
           </button>

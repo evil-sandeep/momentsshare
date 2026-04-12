@@ -6,19 +6,19 @@ const PixelButton = ({ children, onClick, className = "", disabled = false }) =>
     <motion.button
       whileHover={!disabled ? { 
         scale: 1.02,
-        boxShadow: "0px 0px 20px rgba(0, 245, 255, 0.4)",
+        boxShadow: "0px 0px 20px rgba(0, 250, 217, 0.4)",
         filter: "brightness(1.1)"
       } : {}}
       whileTap={!disabled ? { 
         scale: 0.96,
-        boxShadow: "0px 0px 5px rgba(0, 245, 255, 0.2)"
+        boxShadow: "0px 0px 5px rgba(0, 250, 217, 0.2)"
       } : {}}
       onClick={onClick}
       disabled={disabled}
       className={`
         relative px-6 py-3 font-pixel text-[10px] tracking-widest uppercase transition-all
         ${disabled ? 'opacity-50 cursor-not-allowed grayscale' : 'cursor-pointer'}
-        pixel-border bg-cyan-500 text-black font-bold flex items-center justify-center gap-3
+        pixel-border bg-[#FF5252] text-white font-bold flex items-center justify-center gap-3
         ${className}
       `}
     >

@@ -102,15 +102,15 @@ const GalleryPage = () => {
           transition={{ type: 'spring', stiffness: 200, damping: 22 }}
           className="text-center max-w-md"
         >
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-slate-800 border border-slate-700 mb-6">
-            <ImageOff size={36} className="text-slate-500" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-zinc-800 border border-zinc-700 mb-6">
+            <ImageOff size={36} className="text-zinc-500" />
           </div>
           <h1 className="text-3xl font-black text-white tracking-tighter mb-3">Gallery Not Found</h1>
-          <p className="text-slate-400 mb-2">
+          <p className="text-zinc-400 mb-2">
             This gallery does not exist or has expired and been permanently deleted.
           </p>
-          <p className="text-slate-600 text-sm mb-8">
-            SnapShare galleries are automatically removed after <span className="text-slate-400 font-semibold">7 days</span>.
+          <p className="text-zinc-600 text-sm mb-8">
+            SnapShare galleries are automatically removed after <span className="text-zinc-400 font-semibold">7 days</span>.
           </p>
           <div className="flex items-center justify-center gap-2 bg-amber-500/10 border border-amber-500/20 rounded-2xl px-5 py-3 text-amber-400 text-sm mb-8">
             <Clock size={15} />
@@ -118,7 +118,7 @@ const GalleryPage = () => {
           </div>
           <a
             href="/"
-            className="inline-block px-8 py-3 rounded-2xl bg-gradient-to-r from-cyan-500 to-violet-600 text-white font-bold text-sm hover:shadow-[0_0_30px_rgba(0,245,255,0.3)] hover:scale-105 transition-all duration-200"
+            className="inline-block px-8 py-3 rounded-2xl bg-gradient-to-r from-red-500 to-yellow-600 text-white font-bold text-sm hover:shadow-[0_0_30px_rgba(0,245,255,0.3)] hover:scale-105 transition-all duration-200"
           >
             Create a New Gallery →
           </a>
@@ -130,9 +130,9 @@ const GalleryPage = () => {
   // ── Loading Screen ───────────────────────────────────────────
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#080C10] flex items-center justify-center flex-col gap-4">
-        <Loader2 className="text-cyan-400 animate-spin" size={40} />
-        <p className="font-pixel text-[10px] tracking-widest text-slate-700">EXTRACTING ASSETS...</p>
+      <div className="min-h-screen bg-[#050000] flex items-center justify-center flex-col gap-4">
+        <Loader2 className="text-red-500 animate-spin" size={40} />
+        <p className="font-pixel text-[10px] tracking-widest text-zinc-700">EXTRACTING ASSETS...</p>
       </div>
     );
   }
@@ -142,15 +142,15 @@ const GalleryPage = () => {
       <header className="mb-16 flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
         <div>
           <div className="flex items-center gap-4 mb-4">
-            <Sparkles className="text-cyan-400" />
-            <span className="font-pixel text-xs tracking-widest text-cyan-400 uppercase">
+            <Sparkles className="text-red-500" />
+            <span className="font-pixel text-xs tracking-widest text-red-500 uppercase">
               {id ? 'Shared Archive' : 'Global Mesh'}
             </span>
           </div>
           <h1 className="text-5xl font-black tracking-tighter mb-4 text-white uppercase italic">
             {galleryTitle}
           </h1>
-          <p className="text-slate-500 max-w-xl">
+          <p className="text-zinc-500 max-w-xl">
             {id 
               ? `Displaying images from the shared cluster. Auto-cleanup scheduled for ${expiresAt?.toLocaleDateString() || '7 days'}.`
               : 'Synchronizing with the global image mesh. Real-time assets extracted from the MongoDB mainframe.'
@@ -162,16 +162,16 @@ const GalleryPage = () => {
           <PixelButton 
             onClick={handleDownloadAll} 
             disabled={zipping || images.length === 0}
-            className={`!bg-slate-900 border border-slate-800 hover:!border-cyan-500/50 min-w-[200px] ${zipping ? 'opacity-70' : ''}`}
+            className={`!bg-red-950/20 border border-red-900/30 hover:!border-yellow-500/50 min-w-[200px] ${zipping ? 'opacity-70' : ''}`}
           >
             {zipping ? (
               <>
-                <Loader2 className="animate-spin text-cyan-400" size={18} />
+                <Loader2 className="animate-spin text-red-500" size={18} />
                 <span>Creating ZIP...</span>
               </>
             ) : (
               <>
-                <Zap className="text-cyan-400" size={18} />
+                <Zap className="text-yellow-400" size={18} />
                 <span>{id ? 'Download Gallery' : 'Bulk Extract'}</span>
               </>
             )}
@@ -193,7 +193,7 @@ const GalleryPage = () => {
               transition={{ duration: 0.6, delay: i * 0.05 }}
               className="mb-6 relative group"
             >
-              <div className="relative rounded-2xl overflow-hidden glass border-slate-800 transition-all duration-500 group-hover:border-cyan-500/30 group-hover:shadow-[0_0_30px_rgba(0,245,255,0.1)]">
+              <div className="relative rounded-2xl overflow-hidden glass border-red-950 transition-all duration-500 group-hover:border-red-500/30 group-hover:shadow-[0_0_30px_rgba(255,0,0,0.15)]">
                 <motion.img
                   whileHover={{ scale: 1.05 }}
                   transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
@@ -205,7 +205,7 @@ const GalleryPage = () => {
                 />
                 
                 {/* Hover Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-6">
+                <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-6">
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="font-bold text-lg leading-tight text-white line-clamp-1">
                       {img.title || 'Shared Moment'}
@@ -213,7 +213,7 @@ const GalleryPage = () => {
                     <div className="flex gap-2">
                       <button 
                         onClick={(e) => { e.stopPropagation(); handleSingleDownload(img); }}
-                        className="p-2 glass rounded-lg hover:text-cyan-400 transition-colors"
+                        className="p-2 glass rounded-lg hover:text-red-400 transition-colors"
                         title="Download"
                       >
                         <Download size={18} />
@@ -221,10 +221,10 @@ const GalleryPage = () => {
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <p className="text-sm text-slate-400 lowercase italic">@{img.user || 'guest'}</p>
+                    <p className="text-sm text-zinc-400 lowercase italic">@{img.user || 'guest'}</p>
                     <button 
                       onClick={() => setSelectedImage(img)}
-                      className="flex items-center gap-1 text-xs font-bold text-cyan-400 border-b border-cyan-400/0 hover:border-cyan-400 transition-all"
+                      className="flex items-center gap-1 text-xs font-bold text-red-400 border-b border-red-400/0 hover:border-red-400 transition-all"
                     >
                       <Maximize2 size={12} />
                       Expand
@@ -239,16 +239,16 @@ const GalleryPage = () => {
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="flex flex-col items-center justify-center py-40 glass rounded-[2rem] border-slate-800/50 bg-slate-900/10"
+          className="flex flex-col items-center justify-center py-40 glass rounded-[2rem] border-zinc-800/50 bg-zinc-900/10"
         >
-          <div className="w-20 h-20 rounded-2xl bg-slate-800/50 flex items-center justify-center mb-6 border border-slate-700/50">
-            <ImageOff className="text-slate-600" size={32} />
+          <div className="w-20 h-20 rounded-2xl bg-zinc-800/50 flex items-center justify-center mb-6 border border-zinc-700/50">
+            <ImageOff className="text-zinc-600" size={32} />
           </div>
-          <p className="text-slate-400 font-pixel text-[10px] tracking-[0.2em] uppercase mb-4">No Assets Syncing</p>
-          <h3 className="text-xl font-bold text-slate-700 mb-8">This cluster segment is currently empty.</h3>
+          <p className="text-zinc-400 font-pixel text-[10px] tracking-[0.2em] uppercase mb-4">No Assets Syncing</p>
+          <h3 className="text-xl font-bold text-zinc-700 mb-8">This cluster segment is currently empty.</h3>
           <a 
             href="/upload" 
-            className="px-8 py-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-bold tracking-widest uppercase hover:bg-cyan-500/20 transition-all"
+            className="px-8 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-bold tracking-widest uppercase hover:bg-red-500/20 transition-all"
           >
             Initiate First Sync →
           </a>
@@ -265,10 +265,10 @@ const GalleryPage = () => {
         )}
       </AnimatePresence>
 
-      <footer className="mt-20 py-12 border-t border-slate-900/50 text-center">
-        <p className="text-slate-600 text-xs uppercase tracking-widest mb-6 font-pixel">Network Synchronized</p>
+      <footer className="mt-20 py-12 border-t border-red-950/50 text-center">
+        <p className="text-zinc-600 text-xs uppercase tracking-widest mb-6 font-pixel">Network Synchronized</p>
         <PixelButton 
-          className="!bg-slate-900 !text-slate-400 border border-slate-800 hover:!border-cyan-500/50"
+          className="!bg-red-950/20 !text-zinc-400 border border-red-900/30 hover:!border-yellow-500/50"
           onClick={() => window.location.reload()}
         >
           Sync Manual Cache

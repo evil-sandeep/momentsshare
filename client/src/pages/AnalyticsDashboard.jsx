@@ -41,23 +41,23 @@ const AnalyticsDashboard = () => {
 
   return (
     <div className="px-8 py-12 max-w-[1600px] mx-auto min-h-screen">
-      <header className="mb-16 flex flex-col md:flex-row justify-between items-start md:items-end gap-8 border-b border-slate-800 pb-8">
+      <header className="mb-16 flex flex-col md:flex-row justify-between items-start md:items-end gap-8 border-b border-zinc-900 pb-8">
         <div>
           <div className="flex items-center gap-4 mb-4">
-            <Activity className="text-pink-500" />
-            <span className="font-pixel text-xs tracking-widest text-pink-500 uppercase">System Telemetry</span>
+            <Activity className="text-[#FF5252]" />
+            <span className="font-pixel text-xs tracking-widest text-[#FF5252] uppercase">System Telemetry</span>
           </div>
-          <h1 className="text-5xl font-bold tracking-tighter mb-4">Network Activity</h1>
-          <p className="text-slate-500 max-w-xl">Live monitoring of global interaction metrics across the SnapShare grid.</p>
+          <h1 className="text-5xl font-bold tracking-tighter mb-4 text-white uppercase italic">Network Activity</h1>
+          <p className="text-zinc-500 max-w-xl">Live monitoring of global interaction metrics across the SnapShare grid.</p>
         </div>
         
         <div className="flex items-center gap-6">
           <div className="text-right hidden md:block">
-             <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Last Sync</p>
-             <p className="text-sm font-mono text-cyan-400">{lastSync.toLocaleTimeString()}</p>
+             <p className="text-xs font-bold text-zinc-600 uppercase tracking-widest mb-1 font-pixel">Last Sync</p>
+             <p className="text-sm font-mono text-[#00FAD9]">{lastSync.toLocaleTimeString()}</p>
           </div>
-          <PixelButton onClick={fetchStats} className="!bg-slate-900 border border-slate-700 hover:!border-pink-500/50">
-            <RefreshCw size={18} className={`text-pink-500 ${loading ? 'animate-spin' : ''}`} />
+          <PixelButton onClick={fetchStats} className="!bg-[#FF5252]/10 border border-[#FF5252]/20 hover:!border-[#FF5252]/50">
+            <RefreshCw size={18} className={`text-[#FF5252] ${loading ? 'animate-spin' : ''}`} />
             <span>Force Sync</span>
           </PixelButton>
         </div>
@@ -84,11 +84,11 @@ const AnalyticsDashboard = () => {
         />
       </div>
 
-      <div className="mt-16 p-8 rounded-3xl border border-slate-800 bg-slate-900/20 glass flex items-center justify-center min-h-[300px]">
+      <div className="mt-16 p-8 rounded-3xl border border-zinc-800 bg-zinc-900/20 glass flex items-center justify-center min-h-[300px]">
          <div className="text-center flex flex-col items-center">
-            <Activity size={48} className="text-slate-700 w-16 mb-6" />
-            <p className="font-pixel text-[10px] tracking-widest text-slate-600 uppercase">Advanced Graphs Offline</p>
-            <p className="text-slate-500 mt-2 text-sm max-w-md mx-auto">Visual timeline rendering requires additional core processing units. Baseline metrics are active.</p>
+            <Activity size={48} className="text-zinc-700 w-16 mb-6" />
+            <p className="font-pixel text-[10px] tracking-widest text-zinc-600 uppercase">Advanced Graphs Offline</p>
+            <p className="text-zinc-500 mt-2 text-sm max-w-md mx-auto">Visual timeline rendering requires additional core processing units. Baseline metrics are active.</p>
          </div>
       </div>
     </div>

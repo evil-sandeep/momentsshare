@@ -5,16 +5,17 @@
 @tailwind utilities;
 
 :root {
-  --bg-main: #0B0F14;
-  --bg-sidebar: #0F172A;
-  --card-bg: #111827;
-  --primary: #00F5FF;
-  --secondary: #8A2BE2;
-  --accent: #FF00FF;
-  --text-main: #E5E7EB;
-  --text-muted: #9CA3AF;
-  --border: #1F2937;
-  --glow: rgba(0, 245, 255, 0.2);
+  --bg-main: #0A0D12;
+  --bg-sidebar: #0C0F16;
+  --card-bg: #0D1118;
+  --primary: #FF5252;
+  --secondary: #00FAD9;
+  --accent: #FF5252;
+  --text-main: #FFFFFF;
+  --text-muted: #94A3B8;
+  --border: #1E293B;
+  --glow: rgba(255, 82, 82, 0.25);
+  --glow-secondary: rgba(0, 250, 217, 0.25);
 }
 
 * {
@@ -39,14 +40,14 @@ h1, h2, h3, h4, .pixel-font {
   .pixel-border {
     border: 2px solid var(--primary);
     image-rendering: pixelated;
-    box-shadow: 0 0 10px var(--glow);
+    box-shadow: 0 0 15px var(--glow);
   }
 
   .glass {
-    background: rgba(17, 24, 39, 0.7);
+    background: rgba(13, 0, 0, 0.75);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.1);
   }
 
   .glow-hover {
@@ -54,14 +55,14 @@ h1, h2, h3, h4, .pixel-font {
   }
 
   .glow-hover:hover {
-    box-shadow: 0 0 20px var(--glow);
+    box-shadow: 0 0 25px var(--glow);
     border-color: var(--primary);
   }
 
   .button-premium {
     background: linear-gradient(90deg, var(--primary), var(--secondary));
-    color: #000;
-    font-weight: 700;
+    color: #FFFFFF;
+    font-weight: 800;
     padding: 0.75rem 1.5rem;
     border-radius: 12px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -71,11 +72,13 @@ h1, h2, h3, h4, .pixel-font {
     gap: 0.5rem;
     cursor: pointer;
     border: none;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
   .button-premium:hover {
-    box-shadow: 0 0 20px var(--primary);
-    transform: scale(1.05);
+    box-shadow: 0 0 25px rgba(255, 0, 0, 0.4);
+    transform: scale(1.05) translateY(-1px);
   }
 }
 
@@ -101,11 +104,11 @@ h1, h2, h3, h4, .pixel-font {
 .bg-grid {
   position: fixed;
   inset: 0;
-  background-size: 40px 40px;
+  background-size: 50px 50px;
   background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-  mask-image: radial-gradient(circle at center, black, transparent 80%);
+    linear-gradient(to right, rgba(0, 250, 217, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 250, 217, 0.05) 1px, transparent 1px);
+  mask-image: radial-gradient(circle at center, black, transparent 85%);
   pointer-events: none;
   z-index: -1;
 }

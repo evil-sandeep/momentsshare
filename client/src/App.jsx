@@ -38,7 +38,7 @@ function App() {
   // Full-screen layout (no sidebar) — for upload & splash
   if (isFullScreen) {
     return (
-      <div className="min-h-screen bg-[#080C10] text-white overflow-x-hidden">
+      <div className="min-h-screen bg-[#050000] text-white overflow-x-hidden">
         <div className="bg-grid absolute inset-0 pointer-events-none" />
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
@@ -52,7 +52,7 @@ function App() {
 
   // Standard layout with sidebar
   return (
-    <div className="min-h-screen bg-[#0B0F14] text-white flex overflow-hidden">
+    <div className="min-h-screen bg-[#060000] text-white flex overflow-hidden">
       <div className="bg-grid absolute inset-0 pointer-events-none" />
       <Sidebar />
       <main className="flex-1 overflow-y-auto relative z-10">

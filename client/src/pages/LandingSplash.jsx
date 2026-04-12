@@ -36,7 +36,7 @@ const LandingSplash = () => {
           opacity: [0.3, 0.6, 0.3],
         }}
         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute w-[800px] h-[800px] rounded-full bg-cyan-500/10 blur-[120px]"
+        className="absolute w-[800px] h-[800px] rounded-full bg-red-500/10 blur-[120px]"
       />
       <motion.div 
         animate={{ 
@@ -62,7 +62,7 @@ const LandingSplash = () => {
               transition={{ duration: 1.5, repeat: Infinity, delay: rot / 360 }}
               className="absolute inset-0"
             >
-              <div className="absolute top-0 left-0 w-4 h-4 border-t-4 border-l-4 border-cyan-400" />
+              <div className="absolute top-0 left-0 w-4 h-4 border-t-4 border-l-4 border-primary" />
             </motion.div>
           ))}
 
@@ -70,30 +70,30 @@ const LandingSplash = () => {
           <motion.div 
             animate={{ rotate: 360 }}
             transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-4 border-2 border-cyan-500/20 rounded-sm"
+            className="absolute inset-4 border-2 border-red-500/20 rounded-sm"
           >
-            <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-cyan-400 shadow-[0_0_10px_#00F5FF]" />
+            <div className="absolute -top-1 left-1/2 -tranzinc-x-1/2 w-2 h-2 bg-primary shadow-[0_0_10px_#00F5FF]" />
           </motion.div>
 
           {/* Glitch circles */}
           <motion.div 
              animate={{ scale: [1, 1.5, 1], opacity: [0, 0.5, 0] }}
              transition={{ duration: 2, repeat: Infinity }}
-             className="absolute inset-0 rounded-full border border-cyan-400/30"
+             className="absolute inset-0 rounded-full border border-primary/30"
           />
         </div>
 
         {/* Animated Welcome Text */}
         <div className="text-center">
-          <h2 className="font-pixel text-sm tracking-[0.3em] text-cyan-400 mb-4 drop-shadow-[0_0_15px_rgba(0,245,255,0.8)]">
+          <h2 className="font-pixel text-sm tracking-[0.3em] text-primary mb-4 drop-shadow-[0_0_15px_rgba(0,245,255,0.8)]">
             {loadingText}
             <motion.span 
               animate={{ opacity: [1, 0] }}
               transition={{ duration: 0.5, repeat: Infinity }}
-              className="inline-block w-2 h-4 bg-cyan-400 ml-1 translate-y-0.5"
+              className="inline-block w-2 h-4 bg-primary ml-1 tranzinc-y-0.5"
             />
           </h2>
-          <p className="font-sans text-[10px] text-slate-500 tracking-widest uppercase opacity-60">
+          <p className="font-sans text-[10px] text-zinc-500 tracking-widest uppercase opacity-60">
             Secure Neural Link Established
           </p>
         </div>
@@ -104,7 +104,7 @@ const LandingSplash = () => {
         initial={{ top: '-10%' }}
         animate={{ top: '110%' }}
         transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
-        className="absolute left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent shadow-[0_0_15px_rgba(0,245,255,0.3)] z-20"
+        className="absolute left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent shadow-[0_0_15px_rgba(0,245,255,0.3)] z-20"
       />
 
       {/* Magical Transition Overlay */}
@@ -112,7 +112,7 @@ const LandingSplash = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: [0, 0, 1] }}
         transition={{ times: [0, 0.8, 1], duration: 3.5 }}
-        className="absolute inset-0 bg-slate-950 pointer-events-none z-50"
+        className="absolute inset-0 bg-zinc-950 pointer-events-none z-50"
       />
     </div>
   );
